@@ -13,14 +13,18 @@ public class Csv {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Integer id;
 
-    private String[] lines;
+    public String[] headers;
 
-    public Csv(String[] lines) {
+    public String[][] lines;
+
+    public Csv(String[] headers, String[][] lines) {
+        this.headers = headers;
         this.lines = lines;
     }
 
     public Csv() {
-        this.lines = new String[] {};
+        this.headers = new String[] {};
+        this.lines = new String[][] {};
     }
 
     public Integer getId() {
@@ -31,11 +35,19 @@ public class Csv {
         this.id = id;
     }
 
-    public String[] getLines() {
+    public String[] getHeaders() {
+        return headers;
+    }
+
+    public void setHeaders(String[] headers) {
+        this.headers = headers;
+    }
+
+    public String[][] getLines() {
         return lines;
     }
 
-    public void setLines(String[] lines) {
+    public void setLines(String[][] lines) {
         this.lines = lines;
     }
 }
