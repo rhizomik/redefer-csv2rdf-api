@@ -19,7 +19,7 @@ public class CsvReaderTest {
     }
 
     @Test
-    public void convertFileToCsv() {
+    public void convertFileToCsv() throws Exception {
         Csv csv = reader.convertFileToCsv();
         assertEquals(13, csv.headers.length);
         assertEquals(8, csv.lines.length);
