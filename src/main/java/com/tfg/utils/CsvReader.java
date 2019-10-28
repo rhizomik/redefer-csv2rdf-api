@@ -42,15 +42,15 @@ public class CsvReader {
     }
 
     private void setLinesArray(List<String[]> list, String[][] lines) {
-        int j;
+        int j, k = 0;
         for(int i = 1; i < list.size(); i++) {
             String[] row = list.get(i);
             j = 0;
             for (String cell : row) {
-                lines[i][j] = cell;
+                lines[k][j] = cell;
                 j += 1;
             }
-            i+=1;
+            k+=1;
         }
     }
 }
