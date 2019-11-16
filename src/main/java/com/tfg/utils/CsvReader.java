@@ -14,11 +14,11 @@ public class CsvReader {
 
     private CSVReader reader;
 
-    public CsvReader(File file) throws FileNotFoundException {
-        this.reader = new CSVReader(new FileReader(file));
+    public CsvReader() {
     }
 
-    public Csv convertFileToCsv() throws Exception {
+    public Csv convertFileToCsv(File file) throws Exception {
+        this.reader = new CSVReader(new FileReader(file));
         List<String[]> list = reader.readAll();
         int numLines = (int) reader.getLinesRead();
         String [] headers = new String[list.get(0).length];
