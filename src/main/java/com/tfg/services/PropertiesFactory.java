@@ -2,6 +2,7 @@ package com.tfg.services;
 
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.ModelFactory;
+import org.apache.jena.vocabulary.RDF;
 import org.apache.jena.vocabulary.VCARD;
 import org.apache.jena.vocabulary.VCARD4;
 import org.springframework.stereotype.Component;
@@ -156,6 +157,7 @@ public class PropertiesFactory {
     private static Property getCustomProperty(String header){
         // TODO
         Model m = ModelFactory.createDefaultModel();
-        return m.createProperty("", "");
+        return m.createProperty(header);
     }
+
 }

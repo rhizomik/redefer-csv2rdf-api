@@ -1,17 +1,12 @@
 package com.tfg.models;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
 import java.util.ArrayList;
 import java.util.List;
 
-@Entity
+//@Entity
 public class RDFTripletsList {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+
     private Integer id;
 
     List<RDFTriplets> triplets;
