@@ -3,27 +3,25 @@ package com.tfg.services;
 import com.tfg.models.Csv;
 import com.tfg.utils.CsvReader;
 
-
-import org.apache.jena.ontology.ObjectProperty;
 import org.apache.jena.rdf.model.*;
 import org.springframework.stereotype.Service;
 
 import java.io.File;
-import java.net.URI;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 
 @Service
 public class RDFService {
 
-    public List<Model> createRDF(File file) throws Exception { //TODO implement Exceptions
+    private final String NS = "http://provisionalUri.com/";
+
+    public List<Model> createRDF(File file) throws Exception { //TODO implement custom Exceptions
         Csv csv = CsvReader.convertFileToCsv(file);
         List<Model> modelList = new ArrayList<>();
         for(int i = 1; i < csv.lines.length; i++) {
             Model model = ModelFactory.createDefaultModel();
-            Resource r = model.createResource( "http://provisionalUri.com/" + i);
+            Resource r = model.createResource( NS + i);
             addProperties(r, csv, model, i);
             modelList.add(model);
         }
@@ -34,7 +32,7 @@ public class RDFService {
 
     private void addProperties(Resource r, Csv csv, Model model, int i) {
         for(int j = 0; j < csv.lines[i].length; j++) { // if the columns have different length this will cause problems
-            Property property = model.createProperty(csv.headers[j]);
+            Property property = model.createProperty(NS + csv.headers[j]);
             Literal value = model.createLiteral(csv.lines[i][j]);
             model.add(r, property, value);
         }

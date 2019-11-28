@@ -20,7 +20,10 @@ public class TfgApplication {
 		RDFService service = new RDFService();
 		List<Model> models = service.createRDF(new File("./src/test/java/resources/test/Bienes_declarados_Patrimonio_mundial_de_la_UNESCO_en_España.csv"));
 		for(Model model: models){
-			RDFDataMgr.write(System.out, model, Lang.TURTLE);
+			RDFDataMgr.write(System.out, model, Lang.RDFJSON);
+		}
+		for(Model model: models){
+			RDFDataMgr.write(System.out, model, Lang.RDFXML);
 		}
 	}
 
