@@ -1,6 +1,6 @@
 package com.tfg;
 
-import com.tfg.conf.FileStorageProperties;
+import com.tfg.conf.StorageProperties;
 import com.tfg.services.RDFService;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.riot.Lang;
@@ -13,12 +13,13 @@ import java.io.File;
 import java.util.List;
 
 @SpringBootApplication
+@EnableConfigurationProperties(StorageProperties.class)
 public class TfgApplication {
 
 	public static void main(String[] args) throws Exception {
 		SpringApplication.run(TfgApplication.class, args);
 		RDFService service = new RDFService();
-		List<Model> models = service.createRDF(new File("./src/test/java/resources/test/Bienes_declarados_Patrimonio_mundial_de_la_UNESCO_en_España.csv"));
+		List<Model> models = service.createRDF(new File("./src/main/resources/csv/Bienes_declarados_Patrimonio_mundial_de_la_UNESCO_en_España.csv"));
 		for(Model model: models){
 			RDFDataMgr.write(System.out, model, Lang.RDFJSON);
 		}
