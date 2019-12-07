@@ -23,16 +23,23 @@ public class StorageService {
 
     private String path = env.getProperty("file.upload-dir");
 
-    public void store(MultipartFile file)  {
+    public boolean store(MultipartFile file)  {
         try (OutputStream os = Files.newOutputStream(Paths.get(path))){
             os.write(file.getBytes());
+            return true;
         } catch (IOException e) {
             e.printStackTrace();
         }
+        return false;
     }
 
-    public File retrieveFile(String file) {
-        return new File(path + "/" + file);
+    public File retrieveFile(String fileName) {
+        return new File(path + "/" + fileName);
+    }
+
+    public boolean deleteFile(String fileName){
+        File file = retrieveFile(fileName);
+        return file.delete();
     }
 
 }

@@ -1,10 +1,12 @@
 package com.tfg.controllers;
 
 import java.io.IOException;
+import java.util.List;
 
 import com.tfg.exceptions.StorageFileNotFoundException;
 import com.tfg.services.RDFService;
 import com.tfg.services.StorageService;
+import org.apache.jena.rdf.model.Model;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -24,17 +26,18 @@ public class FileUploadController {
     private RDFService rdfService;
 
     @PostMapping("/upload")
-    public String handleFileUpload(@RequestParam("file") MultipartFile file,
-                                   RedirectAttributes redirectAttributes) throws IOException {
+        public List<Model> handleFileUpload(@RequestParam("file") MultipartFile file,
+                                   RedirectAttributes redirectAttributes) throws Exception {
 
         storageService.store(file);
         redirectAttributes.addFlashAttribute("message",
                 "You successfully uploaded " + file.getOriginalFilename() + "!");
+        //TODO mirar si es millor guardar els csv i depsres transformar-los o transformar-los i borrar-los
+        List<Model> rdf = rdfService.createRDF(storageService.retrieveFile(file.getName()));
 
-        /*AQUI S'HA DE FICAR ALGUNA MANERA DE GUARDAR LES STRINGS DELS CSV QUE TENS PUJATS PER A PODER
-        * FER EL .retrieve(nom) del path i redirigir aixo al RDF*/
+        storageService.deleteFile(file.getName());  // TODO fer custom exceptions i comprovar al borrar els file
 
-        return "redirect:/"; // afegir la url que sigui necessaria
+        return rdf;
     }
 
     @ExceptionHandler(StorageFileNotFoundException.class)
