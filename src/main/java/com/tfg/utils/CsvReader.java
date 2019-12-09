@@ -7,6 +7,7 @@ import com.opencsv.CSVReader;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -17,7 +18,7 @@ public class CsvReader {
     public CsvReader() {
     }
 
-    public static Csv convertFileToCsv(File file) throws Exception {
+    public static Csv convertFileToCsv(File file) throws IOException {
         reader = new CSVReader(new FileReader(file));
         List<String[]> list = reader.readAll();
         int numLines = (int) reader.getLinesRead();
