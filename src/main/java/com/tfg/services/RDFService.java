@@ -7,6 +7,8 @@ import org.apache.jena.rdf.model.*;
 import org.springframework.stereotype.Service;
 
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -16,7 +18,7 @@ public class RDFService {
 
     private final String NS = "http://provisionalUri.com/";
 
-    public List<Model> createRDF(File file) throws Exception { //TODO implement custom Exceptions
+    public List<Model> createRDF(File file) throws IOException {
         Csv csv = CsvReader.convertFileToCsv(file);
         List<Model> modelList = new ArrayList<>();
         for(int i = 1; i < csv.lines.length; i++) {

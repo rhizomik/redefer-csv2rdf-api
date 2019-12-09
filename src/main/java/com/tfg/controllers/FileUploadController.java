@@ -1,5 +1,6 @@
 package com.tfg.controllers;
 
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.List;
 
@@ -27,7 +28,7 @@ public class FileUploadController {
 
     @PostMapping("/upload")
         public List<Model> handleFileUpload(@RequestParam("file") MultipartFile file,
-                                   RedirectAttributes redirectAttributes) throws Exception {
+                                   RedirectAttributes redirectAttributes) throws IOException {
 
         storageService.store(file);
         redirectAttributes.addFlashAttribute("message",
@@ -35,7 +36,9 @@ public class FileUploadController {
         //TODO mirar si es millor guardar els csv i depsres transformar-los o transformar-los i borrar-los
         List<Model> rdf = rdfService.createRDF(storageService.retrieveFile(file.getName()));
 
-        storageService.deleteFile(file.getName());  // TODO fer custom exceptions i comprovar al borrar els file
+        if(!storageService.deleteFile(file.getName())){
+            throw new FileNotFoundException("Error deleting the file");
+        }
 
         return rdf;
     }
