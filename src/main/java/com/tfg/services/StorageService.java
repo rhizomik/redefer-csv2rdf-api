@@ -21,7 +21,9 @@ public class StorageService {
     @Autowired
     private Environment env;
 
-    private String path = env.getProperty("file.upload-dir");
+//    private String path = env.getProperty("file.upload-dir");
+
+    private String path = "path"; //prov
 
     public boolean store(MultipartFile file)  {
         try (OutputStream os = Files.newOutputStream(Paths.get(path))){
