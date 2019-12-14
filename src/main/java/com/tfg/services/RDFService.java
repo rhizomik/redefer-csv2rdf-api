@@ -27,6 +27,7 @@ public class RDFService {
     @Autowired
     private TripletsRepository tripletsRepository;
 
+    @Autowired
     private UserRepository userRepository;
 
     private final String NS = "http://provisionalUri.com/";
