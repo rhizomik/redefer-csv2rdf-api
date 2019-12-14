@@ -1,20 +1,33 @@
 package com.tfg.services;
 
 import com.tfg.models.Csv;
+import com.tfg.models.Triplets;
+import com.tfg.models.security.User;
+import com.tfg.repositories.TripletsRepository;
+import com.tfg.repositories.UserRepository;
 import com.tfg.utils.CsvReader;
 
 import org.apache.jena.rdf.model.*;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 
 @Service
 public class RDFService {
+
+    @Autowired
+    private TripletsRepository tripletsRepository;
+
+    private UserRepository userRepository;
 
     private final String NS = "http://provisionalUri.com/";
 
@@ -41,6 +54,29 @@ public class RDFService {
 
     }
 
+    public char[] modelToChar(List<Model> models) {
+        char[] rdf;
+        StringBuilder all_elements = new StringBuilder();
+        for(Model model: models) {
+            StringWriter out = new StringWriter();
+            model.write(out, "RDF/XML-ABBREV");
+            all_elements.append(out.toString());
+            all_elements.append("\n");
+        }
+        rdf = all_elements.toString().toCharArray();
+        return rdf;
+    }
+
+    public void saveToDatabase(List<Model> rdf, String username) {
+        if(!userRepository.findByUsername(username).isEmpty()) {
+            Triplets triplets = new Triplets();
+            triplets.setUser(username);
+            triplets.setRdf(modelToChar(rdf));
+            tripletsRepository.save(triplets);
+            return;
+        }
+        throw new UsernameNotFoundException(username);
+    }
 
 /*
     public List<Model> createRDF(File file) throws Exception {
