@@ -27,11 +27,14 @@ public class FileUploadController {
     private RDFService rdfService;
 
     @PostMapping("/upload")
-        public List<Model> handleFileUpload(@RequestParam("file") MultipartFile file) throws IOException {
+        public List<Model> handleFileUpload(@RequestParam("file") MultipartFile file,
+                                            @RequestParam("user") String username) throws IOException {
 
         storageService.store(file);
 
         List<Model> rdf = rdfService.createRDF(storageService.retrieveFile(file.getName()));
+
+        rdfService.saveToDatabase(rdf, username);
 
         if(!storageService.deleteFile(file.getName())){
             throw new FileNotFoundException("Error deleting the file");
