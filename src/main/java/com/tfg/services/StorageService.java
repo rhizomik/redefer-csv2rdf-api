@@ -22,7 +22,7 @@ public class StorageService {
     private String path;
 
     public boolean store(MultipartFile file)  {
-        try (OutputStream os = Files.newOutputStream(Paths.get(path))){
+        try (OutputStream os = Files.newOutputStream(Paths.get(path + file.getName()))){
             os.write(file.getBytes());
             return true;
         } catch (IOException e) {
