@@ -30,6 +30,7 @@ public class CsvReader {
 
         // read lines
         setLinesArray(list, lines);
+        reader.close();
 
         return new Csv(headers, lines);
     }

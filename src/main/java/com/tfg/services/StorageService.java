@@ -22,8 +22,9 @@ public class StorageService {
     private String path;
 
     public boolean store(MultipartFile file)  {
-        try (OutputStream os = Files.newOutputStream(Paths.get(path + file.getName()))){
+        try (OutputStream os = Files.newOutputStream(Paths.get(path + file.getOriginalFilename()))) {
             os.write(file.getBytes());
+            os.close();
             return true;
         } catch (IOException e) {
             e.printStackTrace();
@@ -32,10 +33,10 @@ public class StorageService {
     }
 
     public File retrieveFile(String fileName) {
-        return new File(path + "/" + fileName);
+        return new File(path  + fileName);
     }
 
-    public boolean deleteFile(String fileName){
+    public boolean deleteFile(String fileName) {
         File file = retrieveFile(fileName);
         return file.delete();
     }

@@ -68,6 +68,18 @@ public class RDFService {
         return rdf;
     }
 
+    public String modelToString(List<Model> models) {
+        StringBuilder all_elements = new StringBuilder();
+        for(Model model: models) {
+            StringWriter out = new StringWriter();
+            model.write(out, "RDF/XML-ABBREV");
+            all_elements.append(out.toString());
+            all_elements.append("\n");
+        }
+
+        return all_elements.toString();
+    }
+
     public void saveToDatabase(List<Model> rdf, String username) {
         if(!userRepository.findByUsername(username).isEmpty()) {
             Triplets triplets = new Triplets();
