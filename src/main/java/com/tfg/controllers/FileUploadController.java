@@ -39,9 +39,9 @@ public class FileUploadController {
         List<Model> rdf = rdfService.createRDF(storageService.retrieveFile(file.getOriginalFilename()));
 
 
-   /*     if(!storageService.deleteFile(file.getOriginalFilename())){
+        if(!storageService.deleteFile(file.getOriginalFilename())){
             throw new FileNotFoundException("Error deleting the file");
-        }*/
+        }
 
         return rdfService.modelToString(rdf);
     }
