@@ -42,7 +42,7 @@ public class FileUploadController {
    /*     if(!storageService.deleteFile(file.getOriginalFilename())){
             throw new FileNotFoundException("Error deleting the file");
         }*/
-        String a = rdfService.modelToString(rdf);
+
         return rdfService.modelToString(rdf);
     }
 /*
