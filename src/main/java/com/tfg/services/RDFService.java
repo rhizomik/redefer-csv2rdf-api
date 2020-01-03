@@ -8,9 +8,12 @@ import com.tfg.repositories.UserRepository;
 import com.tfg.utils.CsvReader;
 
 import org.apache.jena.rdf.model.*;
+import org.apache.jena.riot.Lang;
+import org.apache.jena.riot.RDFDataMgr;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
+import org.w3c.dom.Document;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -73,6 +76,8 @@ public class RDFService {
         for(Model model: models) {
             StringWriter out = new StringWriter();
             model.write(out, "RDF/XML-ABBREV");
+            RDFDataMgr.write(System.out, model, Lang.NTRIPLES);
+            RDFDataMgr.write(System.out, model, Lang.RDFXML);
             all_elements.append(out.toString());
             all_elements.append("\n");
         }
@@ -90,6 +95,7 @@ public class RDFService {
         }
         throw new UsernameNotFoundException(username);
     }
+
 
 /*
     public List<Model> createRDF(File file) throws Exception {

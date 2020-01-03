@@ -2,10 +2,12 @@ package com.tfg.controllers;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.StringReader;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Stream;
 
+import com.tfg.exceptions.GeneralException;
 import com.tfg.exceptions.StorageFileNotFoundException;
 import com.tfg.services.RDFService;
 import com.tfg.services.StorageService;
@@ -19,6 +21,11 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+import org.w3c.dom.Document;
+import org.xml.sax.InputSource;
+
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
 
 @Controller
 public class FileUploadController {
@@ -31,9 +38,9 @@ public class FileUploadController {
 
 
     // PROVISIONAL
-    @PostMapping("/upload")
+    @PostMapping(value = "/upload", produces = {"application/xml"})
     @ResponseBody
-    public String handleFileUpload(@RequestParam("file") MultipartFile file) throws IOException {
+    public String handleFileUpload(@RequestParam("file") MultipartFile file) throws IOException, GeneralException {
         storageService.store(file);
 
         List<Model> rdf = rdfService.createRDF(storageService.retrieveFile(file.getOriginalFilename()));
