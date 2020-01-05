@@ -16,6 +16,11 @@ public class StorageService {
     @Value("${file.upload-dir}")
     private String path;
 
+    /**
+     * Stores the File localy
+     * @param file
+     * @return a boolean indicating if it was possible
+     */
     public boolean store(MultipartFile file)  {
         try (OutputStream os = Files.newOutputStream(Paths.get(path + file.getOriginalFilename()))) {
             os.write(file.getBytes());
@@ -27,10 +32,20 @@ public class StorageService {
         return false;
     }
 
+    /**
+     * Opens and returns the file
+     * @param fileName
+     * @return the file
+     */
     public File retrieveFile(String fileName) {
         return new File(path  + fileName);
     }
 
+    /**
+     * Deletes the file
+     * @param fileName
+     * @return
+     */
     public boolean deleteFile(String fileName) {
         File file = retrieveFile(fileName);
         return file.delete();

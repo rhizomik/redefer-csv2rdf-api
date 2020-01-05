@@ -35,6 +35,12 @@ public class RDFService {
 
     private final String NS = "http://provisionalUri.com/";
 
+    /**
+     * Creates the RDF given a file
+     * @param file
+     * @return A list of models representing the RDF
+     * @throws IOException
+     */
     public List<Model> createRDF(File file) throws IOException {
         Csv csv = CsvReader.convertFileToCsv(file);
         List<Model> modelList = new ArrayList<>();
@@ -58,6 +64,11 @@ public class RDFService {
 
     }
 
+    /**
+     * Given a list of models, transforms it to char
+     * @param models
+     * @return a char array
+     */
     public char[] modelToChar(List<Model> models) {
         char[] rdf;
         StringBuilder all_elements = new StringBuilder();
@@ -71,6 +82,11 @@ public class RDFService {
         return rdf;
     }
 
+    /**
+     * Given a list of models, transforms it to string
+     * @param models
+     * @return a string
+     */
     public String modelToString(List<Model> models) {
         StringBuilder all_elements = new StringBuilder();
         for(Model model: models) {
