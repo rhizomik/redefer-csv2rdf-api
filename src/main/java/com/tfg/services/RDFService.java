@@ -1,6 +1,8 @@
 package com.tfg.services;
 
+import com.tfg.exceptions.GeneralException;
 import com.tfg.models.Csv;
+import com.tfg.models.RDFRequest;
 import com.tfg.models.Triplets;
 import com.tfg.models.security.User;
 import com.tfg.repositories.TripletsRepository;
@@ -35,6 +37,20 @@ public class RDFService {
 
     private final String NS = "http://provisionalUri.com/";
 
+
+    public Model createRDF(File file, RDFRequest request) throws IOException, GeneralException {
+        Csv csv = CsvReader.convertFileToCsv(file);
+        Model model = ModelFactory.createDefaultModel();
+        int subjectPosition = getSubjectPosition(request.subject, csv.headers);
+        for(int i=0; i < csv.lines.length; i++) {
+            Resource r = model.createResource(request.uri + '/'+ csv.lines[i][subjectPosition]);
+            addProperties(r, csv, model, i, subjectPosition, request);
+        }
+        return model;
+    }
+
+
+
     /**
      * Creates the RDF given a file
      * @param file
@@ -47,19 +63,19 @@ public class RDFService {
         for(int i = 1; i < csv.lines.length; i++) {
             Model model = ModelFactory.createDefaultModel();
             Resource r = model.createResource( NS + i);
-            addProperties(r, csv, model, i);
+          //  addProperties(r, csv, model, i);
             modelList.add(model);
         }
-
-
         return modelList;
     }
 
-    private void addProperties(Resource r, Csv csv, Model model, int i) {
+    private void addProperties(Resource r, Csv csv, Model model, int i, int subjectPosition, RDFRequest request) {
         for(int j = 0; j < csv.lines[i].length; j++) { // if the columns have different length this will cause problems
-            Property property = model.createProperty(NS + csv.headers[j]);
-            Literal value = model.createLiteral(csv.lines[i][j]);
-            model.add(r, property, value);
+            if(j != subjectPosition){
+                Property property = model.createProperty(request.uri + '/' + request.types.get(j));
+                Literal value = model.createLiteral(csv.lines[i][j]);
+                model.add(r, property, value);
+            }
         }
 
     }
@@ -84,21 +100,14 @@ public class RDFService {
 
     /**
      * Given a list of models, transforms it to string
-     * @param models
+     * @param model
      * @return a string
      */
-    public String modelToString(List<Model> models) {
-        StringBuilder all_elements = new StringBuilder();
-        for(Model model: models) {
-            StringWriter out = new StringWriter();
-            model.write(out, "RDF/XML-ABBREV");
-            RDFDataMgr.write(System.out, model, Lang.NTRIPLES);
-            RDFDataMgr.write(System.out, model, Lang.RDFXML);
-            all_elements.append(out.toString());
-            all_elements.append("\n");
-        }
+    public String modelToString(Model model, Lang format) throws GeneralException {
+        StringWriter out = new StringWriter();
+        RDFDataMgr.write(out, model, format);
 
-        return all_elements.toString();
+        return out.toString();
     }
 
     public void saveToDatabase(List<Model> rdf, String username) {
@@ -112,6 +121,14 @@ public class RDFService {
         throw new UsernameNotFoundException(username);
     }
 
+    private int getSubjectPosition(String subject, String[] headers) throws GeneralException {
+        for(int i=0; i<headers.length; i++) {
+            if (subject.equals(headers[i])){
+                return i;
+            }
+        }
+        throw new GeneralException("Subject doesn't correspond to any of the headers");
+    }
 
 /*
     public List<Model> createRDF(File file) throws Exception {
