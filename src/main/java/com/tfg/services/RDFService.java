@@ -111,7 +111,7 @@ public class RDFService {
     }
 
     public void saveToDatabase(List<Model> rdf, String username) {
-        if(!userRepository.findByUsername(username).isEmpty()) {
+        if(!userRepository.findByUsernameContaining(username).isEmpty()) {
             Triplets triplets = new Triplets();
             triplets.setUser(username);
             triplets.setRdf(modelToChar(rdf));
