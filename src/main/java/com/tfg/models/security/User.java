@@ -1,105 +1,74 @@
 package com.tfg.models.security;
 
-import java.util.Set;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.JoinTable;
-import javax.persistence.ManyToMany;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import org.hibernate.validator.constraints.Length;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
+
+import javax.persistence.*;
+import javax.validation.constraints.Email;
+import javax.validation.constraints.NotBlank;
 
 
 @Entity
-public class User {
+@Table(name = "RDFUser") //Avoid collision with system table User in Postgres
+@Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
+public abstract class User implements UserDetails {
+
+    public static PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    private Long id;
-
-    @Column
     private String username;
 
-    @Column
+    @NotBlank
+    @Email
+    @Column(name = "email", unique = true)
+    private String email;
+
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
+    @NotBlank
+    @Length(min = 8, max = 256)
     private String password;
 
-    @Column
-    private boolean enabled;
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
+    @Transient
+    private boolean passwordReset;
 
-    @ManyToMany(fetch = FetchType.EAGER)
-    @JoinTable(name = "authorities_users", joinColumns = @JoinColumn(name = "usuario_id"), inverseJoinColumns = @JoinColumn(name = "authority_id"))
-    private Set<Authority> authority;
-
-    public Long getId() {
-        return id;
+    protected User() {
     }
 
-    public void setId(Long id) {
-        this.id = id;
+    public String getEmail() {
+        return this.email;
     }
 
     public String getUsername() {
-        return username;
+        return this.username;
     }
 
-    public void setUsername(String username) {
-        this.username = username;
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
-    }
-
-    public boolean isEnabled() {
-        return enabled;
-    }
-
-    public void setEnabled(boolean enabled) {
-        this.enabled = enabled;
-    }
-
-    public Set<Authority> getAuthority() {
-        return authority;
-    }
-
-    public void setAuthority(Set<Authority> authority) {
-        this.authority = authority;
+    public void encodePassword() {
+        this.password = passwordEncoder.encode(this.password);
     }
 
     @Override
-    public int hashCode() {
-        final int prime = 31;
-        int result = 1;
-        result = prime * result + ((id == null) ? 0 : id.hashCode());
-        return result;
-    }
-
-    @Override
-    public boolean equals(Object obj) {
-        if (this == obj)
-            return true;
-        if (obj == null)
-            return false;
-        if (getClass() != obj.getClass())
-            return false;
-        User other = (User) obj;
-        if (id == null) {
-            if (other.id != null)
-                return false;
-        } else if (!id.equals(other.id))
-            return false;
+    public boolean isAccountNonExpired() {
         return true;
     }
 
     @Override
-    public String toString() {
-        return "User [id=" + id + ", username=" + username + ", password=" + password + "]";
+    public boolean isAccountNonLocked() {
+        return true;
+    }
+
+    @Override
+    public boolean isCredentialsNonExpired() {
+        return true;
+    }
+
+    @Override
+    public boolean isEnabled() {
+        return true;
     }
 
 }
+
