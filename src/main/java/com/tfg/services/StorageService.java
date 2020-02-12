@@ -14,22 +14,25 @@ import java.nio.file.Paths;
 public class StorageService {
 
     @Value("${file.upload-dir}")
-    private String path;
+    private String CsvPath;
+
+    @Value("file.rdf-save-dir")
+    private String RDFPath;
 
     /**
      * Stores the File localy
      * @param file
      * @return a boolean indicating if it was possible
      */
-    public boolean store(MultipartFile file)  {
-        try (OutputStream os = Files.newOutputStream(Paths.get(path + file.getOriginalFilename()))) {
+    public File storeCSV(MultipartFile file)  {
+        try (OutputStream os = Files.newOutputStream(Paths.get(CsvPath + file.getOriginalFilename()))) {
             os.write(file.getBytes());
             os.close();
-            return true;
+            return retrieveCsvFile(file.getOriginalFilename());
         } catch (IOException e) {
             e.printStackTrace();
         }
-        return false;
+        return null;
     }
 
     /**
@@ -37,8 +40,12 @@ public class StorageService {
      * @param fileName
      * @return the file
      */
-    public File retrieveFile(String fileName) {
-        return new File(path  + fileName);
+    public File retrieveCsvFile(String fileName) {
+         File file = new File(CsvPath  + "\\" + fileName);
+         if(file.exists()) {
+             return file;
+         }
+         return null;
     }
 
     /**
@@ -46,10 +53,43 @@ public class StorageService {
      * @param fileName
      * @return
      */
-    public boolean deleteFile(String fileName) {
-        File file = retrieveFile(fileName);
+    public boolean deleteCsvFile(String fileName) {
+        File file = retrieveCsvFile(fileName);
         return file.delete();
     }
 
+    /**
+     * Opens and returns the file
+     * @param fileName
+     * @return the file
+     */
+    public File retrieveRDFFile(String fileName) {
+        File file = new File(RDFPath  + "\\" + fileName);
+        if(file.exists()) {
+            return file;
+        }
+        return null;
+    }
+
+    /**
+     * Deletes the file
+     * @param fileName
+     * @return
+     */
+    public boolean deleteRDFFile(String fileName) {
+        File file = retrieveRDFFile(fileName);
+        return file.delete();
+    }
+
+    public File storeRDF(byte[] file, String fileName)  {
+        try (OutputStream os = Files.newOutputStream(Paths.get(RDFPath + fileName))) {
+            os.write(file);
+            os.close();
+            return retrieveRDFFile(fileName);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
 }
 

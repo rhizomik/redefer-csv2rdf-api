@@ -1,5 +1,6 @@
 package com.tfg.models;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.validation.FieldError;
@@ -9,7 +10,10 @@ import java.util.List;
 
 public class GenericResponse {
 
+    @JsonProperty("message")
     private String message;
+    
+    @JsonProperty("error")
     private String error;
 
     public GenericResponse(String message, String error) {

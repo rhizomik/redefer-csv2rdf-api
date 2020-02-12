@@ -11,6 +11,7 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.http.SessionCreationPolicy;
 
+import org.springframework.security.data.repository.query.SecurityEvaluationContextExtension;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
@@ -18,6 +19,8 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 @EnableWebSecurity
 @EnableGlobalMethodSecurity(prePostEnabled = true)
 public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
+    @Value("${allowed-origins}")
+    String[] allowedOrigins;
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
@@ -29,8 +32,6 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     //            .antMatchers(HttpMethod.POST, "/upload").authenticated()
                 .anyRequest().permitAll()
                 .and()
-                .httpBasic().realmName("Tool to improve open data quality")
-                .and()
                 .cors()
                 .and()
                 .csrf().disable();
@@ -39,7 +40,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     @Bean
     CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration corsConfiguration = new CorsConfiguration();
-      //  corsConfiguration.setAllowedOrigins(Arrays.asList(allowedOrigins));
+        corsConfiguration.setAllowedOrigins(Arrays.asList(allowedOrigins));
         corsConfiguration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
         corsConfiguration.setAllowedHeaders(Arrays.asList("*"));
         corsConfiguration.setAllowCredentials(true);
@@ -47,6 +48,11 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", corsConfiguration);
         return source;
+    }
+
+    @Bean
+    public SecurityEvaluationContextExtension securityEvaluationContextExtension() {
+        return new SecurityEvaluationContextExtension();
     }
 
 }

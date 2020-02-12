@@ -1,21 +1,19 @@
 package com.tfg.controllers;
 
 import com.tfg.exceptions.GeneralException;
-import com.tfg.models.GenericResponse;
 import com.tfg.models.security.User;
 import com.tfg.repositories.UserRepository;
 import com.tfg.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.rest.webmvc.BasePathAwareController;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.validation.Valid;
 
-@Controller
+
+@BasePathAwareController
 public class IdentityController {
 
     @Autowired
@@ -30,15 +28,10 @@ public class IdentityController {
         return user.getUsername();
     }
 
-    @PostMapping("/register")
+    @RequestMapping(value = "/register", produces = "application/json")
     public @ResponseBody
-    GenericResponse registerUser(@Valid User user, HttpServletRequest request) {
-        try {
-            userService.registerNewUserAccount(user);
-        } catch (GeneralException e) {
-            return new GenericResponse("", "User or email already exist");
-        }
-
-        return new GenericResponse("User creation success", "");
+    User registerUser(User user) throws GeneralException {
+        User registeredUser = userService.registerNewUserAccount(user);
+        return registeredUser;
     }
 }

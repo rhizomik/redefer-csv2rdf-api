@@ -6,6 +6,7 @@ import com.tfg.conf.RDFRequestEditor;
 import com.tfg.exceptions.GeneralException;
 import com.tfg.exceptions.StorageFileNotFoundException;
 import com.tfg.models.RDFRequest;
+import com.tfg.services.FileUploadService;
 import com.tfg.services.RDFService;
 import com.tfg.services.StorageService;
 import org.apache.jena.rdf.model.Model;
@@ -26,6 +27,8 @@ public class FileUploadController {
     @Autowired
     private RDFService rdfService;
 
+    @Autowired
+    private FileUploadService fileUploadService;
 
     @InitBinder
     public void initBinder(WebDataBinder binder) {
@@ -60,10 +63,12 @@ public class FileUploadController {
     public byte[] generateRDF(@RequestParam("file") MultipartFile file,
                                  @RequestParam("RDFRequest") RDFRequest request) throws IOException, GeneralException {
 
-        storageService.store(file);
-        Model rdf = rdfService.createRDF(storageService.retrieveFile(file.getOriginalFilename()), request);
+        storageService.storeCSV(file);
+        Model rdf = rdfService.createRDF(storageService.retrieveCsvFile(file.getOriginalFilename()), request);
 
-        byte[] returnBytes = rdfService.modelToString(rdf, RDFLanguages.nameToLang(request.format)).getBytes();
+      //  fileUploadService.saveCsvFileToDatabase("raultds", storageService.retrieveCsvFile(file.getName()));
+
+        byte[] returnBytes = rdfService.modelToByte(rdf, RDFLanguages.nameToLang(request.format));
         
         return returnBytes;
     }

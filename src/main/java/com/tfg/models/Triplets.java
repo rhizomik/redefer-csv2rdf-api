@@ -5,11 +5,9 @@ import org.apache.jena.rdf.model.Model;
 import javax.persistence.*;
 import java.util.List;
 
-@Entity
+
 public class Triplets {
 
-    @Id
-    @GeneratedValue
     private Long id;
 
   //  private List<Model> models;
