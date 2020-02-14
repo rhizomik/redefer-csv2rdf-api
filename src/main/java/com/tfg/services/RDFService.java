@@ -64,7 +64,7 @@ public class RDFService {
     private void addProperties(Resource r, String[] lines, Model model, int subjectPosition, List<String> types, String uri) {
         for(int j = 0; j < lines.length; j++) { // if the columns have different length this will cause problems
             if(j != subjectPosition){
-                Property property = model.createProperty(uri + '/' + types.get(j));
+                Property property = model.createProperty(types.get(j));
                 Literal value = model.createLiteral(lines[j]);
                 model.add(r, property, value);
             }

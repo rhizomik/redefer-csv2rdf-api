@@ -24,8 +24,8 @@ public class StorageService {
      * @param file
      * @return a boolean indicating if it was possible
      */
-    public File storeCSV(MultipartFile file)  {
-        try (OutputStream os = Files.newOutputStream(Paths.get(CsvPath + file.getOriginalFilename()))) {
+    public File storeCSV(MultipartFile file) {
+        try (OutputStream os = Files.newOutputStream(Paths.get(CsvPath + File.separator + file.getOriginalFilename()))) {
             os.write(file.getBytes());
             os.close();
             return retrieveCsvFile(file.getOriginalFilename());
@@ -45,6 +45,7 @@ public class StorageService {
          if(file.exists()) {
              return file;
          }
+         //TODO hacer cosas
          return null;
     }
 
