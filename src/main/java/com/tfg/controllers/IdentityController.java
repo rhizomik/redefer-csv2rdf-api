@@ -23,7 +23,7 @@ public class IdentityController {
     UserService userService;
 
     @RequestMapping("/identity")
-    public @ResponseBody String getAuthenticatedUserIdentity(){
+    public @ResponseBody String getAuthenticatedUserIdentity() {
         User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         return user.getUsername();
     }

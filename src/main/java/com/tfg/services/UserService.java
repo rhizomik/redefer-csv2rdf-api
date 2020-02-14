@@ -30,7 +30,7 @@ public class UserService implements UserDetailsService {
         } else if(userRepository.findByEmail(user.getEmail()) != null) {
             throw new GeneralException("Email already exists");
         }
-
+        user.encodePassword();
         return userRepository.save(user);
     }
 

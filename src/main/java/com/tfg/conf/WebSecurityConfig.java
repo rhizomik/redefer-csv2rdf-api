@@ -34,6 +34,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .and()
                 .cors()
                 .and()
+                .httpBasic().realmName("RDF-TRANSFORMER")
+                .and()
                 .csrf().disable();
     }
 
