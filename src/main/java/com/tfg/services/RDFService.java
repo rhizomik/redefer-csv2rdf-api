@@ -8,6 +8,7 @@ import com.tfg.repositories.RdfRefRepository;
 import com.tfg.repositories.UserRepository;
 import com.tfg.utils.CsvReader;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.jena.rdf.model.*;
 import org.apache.jena.riot.Lang;
 import org.apache.jena.riot.RDFDataMgr;
@@ -32,8 +33,8 @@ public class RDFService {
     @Autowired
     private UserRepository userRepository;
 
-    @Value("file.rdf-save-dir")
-    private String RDFPath;
+    @Value("file.upload-dir")
+    private String provisionalPath;
 
     @Autowired
     private StorageService storageService;
@@ -44,14 +45,34 @@ public class RDFService {
     @Autowired
     private FileRefRepository fileRefRepository;
 
+    @Autowired
+    private UserService userService;
+
     /**
      * Creates the RDF given a file
-     * @param file
+     * @param fileRef
      * @return A list of models representing the RDF
      * @throws IOException
      */
+    public Model createRDFUser(FileRef fileRef, RDFRequest request) throws IOException, GeneralException {
+        File file = new File(provisionalPath + File.separator + fileRef.getOriginalName());
+        FileUtils.writeByteArrayToFile(file, fileRef.getFile());
+        Csv csv = CsvReader.convertFileToCsv(file);
+        file.delete();
+
+        Model model = ModelFactory.createDefaultModel();
+        int subjectPosition = getSubjectPosition(request.subject, csv.headers);
+        for(int i=0; i < csv.lines.length; i++) {
+            Resource r = model.createResource(request.uri + '/' +csv.lines[i][subjectPosition]);
+            addProperties(r, csv.lines[i], model, subjectPosition, request.types, request.uri);
+        }
+        return model;
+    }
+
     public Model createRDF(File file, RDFRequest request) throws IOException, GeneralException {
         Csv csv = CsvReader.convertFileToCsv(file);
+        file.delete();
+
         Model model = ModelFactory.createDefaultModel();
         int subjectPosition = getSubjectPosition(request.subject, csv.headers);
         for(int i=0; i < csv.lines.length; i++) {
@@ -62,9 +83,9 @@ public class RDFService {
     }
 
     private void addProperties(Resource r, String[] lines, Model model, int subjectPosition, List<String> types, String uri) {
-        for(int j = 0; j < lines.length; j++) { // if the columns have different length this will cause problems
+        for(int j = 0; j < lines.length; j++) {
             if(j != subjectPosition){
-                Property property = model.createProperty(types.get(j));
+                Property property = model.createProperty(uri + "/" + types.get(j));
                 Literal value = model.createLiteral(lines[j]);
                 model.add(r, property, value);
             }
@@ -115,22 +136,17 @@ public class RDFService {
         throw new GeneralException("Subject doesn't correspond to any of the headers");
     }
 
-    public void saveRDFToDatabase(byte[] rdfBytes, String username, String fileName) {
-        String newFileName = fileName + "_rdf";
+    public void saveRDFToDatabase(byte[] rdfBytes, String username, String fileName, String format) {
+        User user = (User) userService.loadUserByUsername(username);
+        FileRef fileRef = fileRefRepository.findByOriginalNameAndUser(fileName, user);
 
-        if(storageService.retrieveRDFFile(fileName) != null) { // If it exists, generate a different name
-            int i = 0;
-            while(storageService.retrieveRDFFile(newFileName) != null) {
-                i += 1;
-                newFileName += i;
-            }
+        RdfRef rdfRef = rdfRefRepository.findByFileRef(fileRef);
+        if(rdfRef == null) {
+            rdfRef = new RdfRef();
         }
-        File storedFile = storageService.storeRDF(rdfBytes, newFileName); // TODO mirar si es dupliquen els File a la BBDD
-
-        RdfRef rdfRef = new RdfRef();
-        rdfRef.setFileRef(fileRefRepository.findByOriginalName(fileName));
-        rdfRef.setRDFFile(storedFile);
-
+        rdfRef.setRDFFile(rdfBytes);
+        rdfRef.setFileRef(fileRef);
+        rdfRef.setFormat(format);
         rdfRefRepository.save(rdfRef);
     }
 

@@ -3,17 +3,22 @@ package com.tfg.models;
 import com.tfg.models.security.User;
 
 import javax.persistence.*;
+import javax.validation.constraints.Size;
 import java.io.File;
 
 @Entity
 public class FileRef {
+
+    private final static int size = 1024 * 1024; //1GB
 
     @Id
     private long id;
 
     private String originalName;
 
-    private File file;
+    @Column(length = size)
+    @Size(max = size)
+    private byte[] file;
 
     @OneToOne
     private User user;
@@ -38,11 +43,11 @@ public class FileRef {
         this.originalName = originalName;
     }
 
-    public File getFile() {
+    public byte[] getFile() {
         return file;
     }
 
-    public void setFile(File file) {
+    public void setFile(byte[] file) {
         this.file = file;
     }
 

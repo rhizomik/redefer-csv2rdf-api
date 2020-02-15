@@ -9,7 +9,7 @@ import java.io.File;
 
 @Repository
 public interface FileRefRepository extends CrudRepository<FileRef, Long> {
-    FileRef findByOriginalName(String originalName);
-    FileRef findByFile(File file);
+    FileRef findByOriginalNameAndUser(String originalName, User user);
+    FileRef findByFile(byte[] file);
     FileRef findByUser(User user);
 }

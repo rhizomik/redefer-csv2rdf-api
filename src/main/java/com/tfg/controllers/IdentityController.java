@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 
 @BasePathAwareController
+@RequestMapping("/api")
 public class IdentityController {
 
     @Autowired
@@ -23,9 +24,9 @@ public class IdentityController {
     UserService userService;
 
     @RequestMapping("/identity")
-    public @ResponseBody String getAuthenticatedUserIdentity() {
+    public @ResponseBody User getAuthenticatedUserIdentity() {
         User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        return user.getUsername();
+        return user;
     }
 
     @RequestMapping(value = "/register", produces = "application/json")

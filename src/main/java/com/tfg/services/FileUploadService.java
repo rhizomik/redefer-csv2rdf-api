@@ -22,13 +22,19 @@ public class FileUploadService {
     @Autowired
     private UserRepository userRepository;
 
+    @Autowired
+    private UserService userService;
 
-    public void saveCsvFileToDatabase(String username, File file) {
-        User user = userRepository.findByUsername(username);
-        FileRef fileRef = new FileRef();
-        fileRef.setFile(file);
-        fileRef.setOriginalName(file.getName());
-        fileRef.setUser(user);
-        fileRefRepository.save(fileRef);
+    public FileRef saveCsvToDatabase(byte[] bytes, String fileName, String username) {
+        User user = (User) userService.loadUserByUsername(username);
+        FileRef fileRef = fileRefRepository.findByOriginalNameAndUser(fileName, user);
+        if(fileRef == null){
+            fileRef = new FileRef();
+            fileRef.setFile(bytes);
+            fileRef.setOriginalName(fileName);
+            fileRef.setUser(user);
+            return fileRefRepository.save(fileRef);
+        }
+        return fileRef;
     }
 }
