@@ -18,13 +18,12 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.w3c.dom.Document;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.StringWriter;
+import java.io.*;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.zip.ZipOutputStream;
 
 
 @Service
@@ -82,33 +81,29 @@ public class RDFService {
         return model;
     }
 
-    private void addProperties(Resource r, String[] lines, Model model, int subjectPosition, List<String> types, String uri) {
-        for(int j = 0; j < lines.length; j++) {
-            if(j != subjectPosition){
-                Property property = model.createProperty(uri + "/" + types.get(j));
-                Literal value = model.createLiteral(lines[j]);
-                model.add(r, property, value);
-            }
+    public FileList getAllRdfRefs(User user) {
+        List<FileRef> fileRefs = fileRefRepository.findAllByUser(user);
+        FileList fileList = new FileList();
+        for(FileRef fileRef: fileRefs) {
+            fileList.csvFiles.add(fileRef.getOriginalName());
+            String name = fileRef.getOriginalName().substring(0, fileRef.getOriginalName().length() - 4);
+            fileList.rdfFiles.add(name + "_rdf" + rdfRefRepository.findByFileRef(fileRef).getFormat());
         }
-
+        return fileList;
     }
 
-    /**
-     * Given a list of models, transforms it to char
-     * @param models
-     * @return a char array
-     */
-    public char[] modelToChar(List<Model> models) {
-        char[] rdf;
-        StringBuilder all_elements = new StringBuilder();
-        for(Model model: models) {
-            StringWriter out = new StringWriter();
-            model.write(out, "RDF/XML-ABBREV");
-            all_elements.append(out.toString());
-            all_elements.append("\n");
+    public void saveRDFToDatabase(byte[] rdfBytes, String username, String fileName, String format) {
+        User user = (User) userService.loadUserByUsername(username);
+        FileRef fileRef = fileRefRepository.findByOriginalNameAndUser(fileName, user);
+
+        RdfRef rdfRef = rdfRefRepository.findByFileRef(fileRef);
+        if(rdfRef == null) {
+            rdfRef = new RdfRef();
         }
-        rdf = all_elements.toString().toCharArray();
-        return rdf;
+        rdfRef.setRDFFile(rdfBytes);
+        rdfRef.setFileRef(fileRef);
+        rdfRef.setFormat(format);
+        rdfRefRepository.save(rdfRef);
     }
 
     /**
@@ -136,19 +131,23 @@ public class RDFService {
         throw new GeneralException("Subject doesn't correspond to any of the headers");
     }
 
-    public void saveRDFToDatabase(byte[] rdfBytes, String username, String fileName, String format) {
-        User user = (User) userService.loadUserByUsername(username);
-        FileRef fileRef = fileRefRepository.findByOriginalNameAndUser(fileName, user);
-
-        RdfRef rdfRef = rdfRefRepository.findByFileRef(fileRef);
-        if(rdfRef == null) {
-            rdfRef = new RdfRef();
+    private void addProperties(Resource r, String[] lines, Model model, int subjectPosition, List<String> types, String uri) {
+        for(int j = 0; j < lines.length; j++) {
+            if(j != subjectPosition){
+                Property property = model.createProperty(uri + "/" + types.get(j));
+                Literal value = model.createLiteral(lines[j]);
+                model.add(r, property, value);
+            }
         }
-        rdfRef.setRDFFile(rdfBytes);
-        rdfRef.setFileRef(fileRef);
-        rdfRef.setFormat(format);
-        rdfRefRepository.save(rdfRef);
     }
 
+    public List<String> getRequestedByteFiles(String file, User user)  {
+        FileRef fileRef = fileRefRepository.findByOriginalNameAndUser(file, user);
+        RdfRef rdfRef = rdfRefRepository.findByFileRef(fileRef);
 
+        ArrayList<String> list = new ArrayList<>();
+        list.add(new String(fileRef.getFile()));
+        list.add(new String(rdfRef.getRDFFile()));
+        return list;
+    }
 }

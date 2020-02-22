@@ -65,7 +65,7 @@ public class StorageService {
      * @return the file
      */
     public File retrieveRDFFile(String fileName) {
-        File file = new File(RDFPath  + "\\" + fileName);
+        File file = new File(RDFPath  + File.separator + fileName);
         if(file.exists()) {
             return file;
         }

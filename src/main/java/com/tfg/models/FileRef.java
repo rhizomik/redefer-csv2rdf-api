@@ -12,6 +12,7 @@ public class FileRef {
     private final static int size = 1024 * 1024; //1GB
 
     @Id
+    @GeneratedValue(strategy=GenerationType.AUTO)
     private long id;
 
     private String originalName;
@@ -20,7 +21,7 @@ public class FileRef {
     @Size(max = size)
     private byte[] file;
 
-    @OneToOne
+    @ManyToOne
     private User user;
 
     public FileRef() {

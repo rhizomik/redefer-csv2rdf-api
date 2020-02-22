@@ -1,9 +1,6 @@
 package com.tfg.models;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.OneToOne;
+import javax.persistence.*;
 import javax.validation.constraints.Size;
 
 @Entity
@@ -12,6 +9,7 @@ public class RdfRef {
     private final static int size = 1024 * 1024; //1GB
 
     @Id
+    @GeneratedValue(strategy= GenerationType.AUTO)
     private long id;
 
     @OneToOne
@@ -52,7 +50,13 @@ public class RdfRef {
     }
 
     public String getFormat() {
-        return format;
+        if(format.equals("RDF/XML")) {
+            return ".xml";
+        }else if(format.equals("RDF/JSON")) {
+            return ".json";
+        } else {
+            return ".txt";
+        }
     }
 
     public void setFormat(String format) {
