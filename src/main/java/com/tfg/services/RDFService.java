@@ -56,16 +56,7 @@ public class RDFService {
     public Model createRDFUser(FileRef fileRef, RDFRequest request) throws IOException, GeneralException {
         File file = new File(provisionalPath + File.separator + fileRef.getOriginalName());
         FileUtils.writeByteArrayToFile(file, fileRef.getFile());
-        Csv csv = CsvReader.convertFileToCsv(file);
-        file.delete();
-
-        Model model = ModelFactory.createDefaultModel();
-        int subjectPosition = getSubjectPosition(request.subject, csv.headers);
-        for(int i=0; i < csv.lines.length; i++) {
-            Resource r = model.createResource(request.uri + '/' +csv.lines[i][subjectPosition]);
-            addProperties(r, csv.lines[i], model, subjectPosition, request.types, request.uri);
-        }
-        return model;
+        return createRDF(file, request);
     }
 
     public Model createRDF(File file, RDFRequest request) throws IOException, GeneralException {
@@ -76,7 +67,7 @@ public class RDFService {
         int subjectPosition = getSubjectPosition(request.subject, csv.headers);
         for(int i=0; i < csv.lines.length; i++) {
             Resource r = model.createResource(request.uri + '/'+ csv.lines[i][subjectPosition]);
-            addProperties(r, csv.lines[i], model, subjectPosition, request.types, request.uri);
+            addProperties(r, csv.lines[i], model, subjectPosition, request.types);
         }
         return model;
     }
@@ -131,12 +122,11 @@ public class RDFService {
         throw new GeneralException("Subject doesn't correspond to any of the headers");
     }
 
-    private void addProperties(Resource r, String[] lines, Model model, int subjectPosition, List<String> types, String uri) {
+    private void addProperties(Resource r, String[] lines, Model model, int subjectPosition, List<String> types) {
         for(int j = 0; j < lines.length; j++) {
             if(j != subjectPosition){
-                Property property = model.createProperty(uri + "/" + types.get(j));
-                Literal value = model.createLiteral(lines[j]);
-                model.add(r, property, value);
+                Property property = model.createProperty(types.get(j));
+                model.add(r, property, lines[j]);
             }
         }
     }

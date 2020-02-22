@@ -49,6 +49,7 @@ public class CsvReader {
             String[] row = list.get(i);
             j = 0;
             for (String cell : row) {
+                cell = cell.replace(" ", "%20");
                 lines[k][j] = cell;
                 j += 1;
             }
