@@ -1,9 +1,8 @@
 package com.tfg.models;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import org.springframework.web.multipart.MultipartFile;
+
+
 
 import java.util.List;
 
@@ -17,20 +16,19 @@ public class RDFRequest {
     public String format;
     @JsonProperty("types")
     public List<String> types;
-  /*  private List<String> headers;
-    private List<List<String>> lines;*/
+    @JsonProperty("dataTypes")
+    public List<DataType> dataTypes;
+
 
   public RDFRequest() {
-
   }
 
-    public RDFRequest(String subject, String uri, String format, List<String> types, List<String> headers, List<List<String>> lines) {
+    public RDFRequest(String subject, String uri, String format, List<String> types,  List<DataType> dataTypes) {
         this.subject = subject;
         this.uri = uri;
         this.format = format;
         this.types = types;
-   /*     this.headers = headers;
-        this.lines = lines;*/
+        this.dataTypes = dataTypes;
     }
 
     public String getSubject() {
@@ -64,20 +62,12 @@ public class RDFRequest {
     public void setTypes(List<String> types) {
         this.types = types;
     }
-/*
-    public List<String> getHeaders() {
-        return headers;
+
+    public List<DataType> getDataTypes() {
+        return dataTypes;
     }
 
-    public void setHeaders(List<String> headers) {
-        this.headers = headers;
+    public void setDataTypes(List<DataType> dataTypes) {
+        this.dataTypes = dataTypes;
     }
-
-    public List<List<String>> getLines() {
-        return lines;
-    }
-
-    public void setLines(List<List<String>> lines) {
-        this.lines = lines;
-    }*/
 }

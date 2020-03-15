@@ -14,16 +14,12 @@ import org.apache.jena.riot.Lang;
 import org.apache.jena.riot.RDFDataMgr;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
-import org.w3c.dom.Document;
 
 import java.io.*;
-import java.nio.file.Files;
+import java.sql.Date;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
-import java.util.zip.ZipOutputStream;
 
 
 @Service
@@ -67,7 +63,7 @@ public class RDFService {
         int subjectPosition = getSubjectPosition(request.subject, csv.headers);
         for(int i=0; i < csv.lines.length; i++) {
             Resource r = model.createResource(request.uri + '/'+ csv.lines[i][subjectPosition]);
-            addProperties(r, csv.lines[i], model, subjectPosition, request.types);
+            addProperties(r, csv.lines[i], model, subjectPosition, request.types, request.dataTypes);
         }
         return model;
     }
@@ -122,11 +118,11 @@ public class RDFService {
         throw new GeneralException("Subject doesn't correspond to any of the headers");
     }
 
-    private void addProperties(Resource r, String[] lines, Model model, int subjectPosition, List<String> types) {
+    private void addProperties(Resource r, String[] lines, Model model, int subjectPosition, List<String> types, List<DataType> dataTypes) throws GeneralException {
         for(int j = 0; j < lines.length; j++) {
             if(j != subjectPosition){
-                Property property = model.createProperty(types.get(j));
-                model.add(r, property, lines[j]);
+             //   Property property = model.createProperty(types.get(j));
+                createTypedLiteral(model, dataTypes.get(j), r, types.get(j), lines[j]);
             }
         }
     }
@@ -139,5 +135,29 @@ public class RDFService {
         list.add(new String(fileRef.getFile()));
         list.add(new String(rdfRef.getRDFFile()));
         return list;
+    }
+
+    private void createTypedLiteral(Model model, DataType dataType, Resource r, String propertyUri, String value) throws GeneralException {
+        Literal l = selectDataTypeLiteral(model, value, dataType);
+        Property property = model.createProperty(propertyUri);
+        model.addLiteral(r, property, l);
+    }
+
+    private Literal selectDataTypeLiteral(Model model, String value, DataType dataType) throws GeneralException {
+        switch(dataType){
+            case text:
+                return model.createTypedLiteral(value);
+            case _date:
+                return model.createTypedLiteral(Date.valueOf(value));
+            case _integer:
+                return model.createTypedLiteral(Integer.parseInt(value));
+            case _boolean:
+                return model.createTypedLiteral(Boolean.parseBoolean(value));
+            case NonInteger:
+                return model.createTypedLiteral(Float.parseFloat(value));
+            default:
+                throw new GeneralException("DataType doesn't correspond to a parsejable type");
+        }
+
     }
 }
