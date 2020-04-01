@@ -9,6 +9,7 @@ import com.tfg.repositories.UserRepository;
 import com.tfg.utils.CsvReader;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.jena.datatypes.xsd.XSDDatatype;
 import org.apache.jena.rdf.model.*;
 import org.apache.jena.riot.Lang;
 import org.apache.jena.riot.RDFDataMgr;
@@ -146,15 +147,15 @@ public class RDFService {
     private Literal selectDataTypeLiteral(Model model, String value, DataType dataType) throws GeneralException {
         switch(dataType){
             case text:
-                return model.createTypedLiteral(value);
+                return model.createTypedLiteral(value, XSDDatatype.XSDstring);
             case _date:
-                return model.createTypedLiteral(Date.valueOf(value));
+                return model.createTypedLiteral(value, XSDDatatype.XSDdate);
             case _integer:
-                return model.createTypedLiteral(Integer.parseInt(value));
+                return model.createTypedLiteral(value, XSDDatatype.XSDint);
             case _boolean:
-                return model.createTypedLiteral(Boolean.parseBoolean(value));
+                return model.createTypedLiteral(value, XSDDatatype.XSDboolean);
             case NonInteger:
-                return model.createTypedLiteral(Float.parseFloat(value));
+                return model.createTypedLiteral(value, XSDDatatype.XSDdecimal);
             default:
                 throw new GeneralException("DataType doesn't correspond to a parsejable type");
         }
