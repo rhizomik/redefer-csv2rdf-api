@@ -11,18 +11,8 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 @EnableConfigurationProperties(StorageProperties.class)
 public class TfgApplication {
 
-	public static void main(String[] args) throws Exception {
+	public static void main(String[] args) {
 		SpringApplication.run(TfgApplication.class, args);
-
-	/*	RDFService service = new RDFService();
-		List<Model> models = service.createRDF(new File("./src/main/resources/csv/Bienes_declarados_Patrimonio_mundial_de_la_UNESCO_en_España.csv"));
-		for(Model model: models){
-			RDFDataMgr.write(System.out, model, Lang.RDFJSON);
-		}
-		for(Model model: models){
-			RDFDataMgr.write(System.out, model, Lang.RDFXML);
-		}
-*/
 	}
 
 }

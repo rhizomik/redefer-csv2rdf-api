@@ -9,6 +9,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.Random;
 
 @Service
 public class StorageService {
@@ -25,10 +26,16 @@ public class StorageService {
      * @return a boolean indicating if it was possible
      */
     public File storeCSV(MultipartFile file) {
-        try (OutputStream os = Files.newOutputStream(Paths.get(CsvPath + File.separator + file.getOriginalFilename()))) {
+        Random random = new Random();
+        // Use random number to try to avoid collisions with the same file name
+        String random_id = String.valueOf(random.nextInt(10000));
+        try (OutputStream os = Files.newOutputStream(Paths.get(CsvPath +
+                                                                File.separator +
+                                                                file.getOriginalFilename() +
+                                                                random_id))) {
             os.write(file.getBytes());
             os.close();
-            return retrieveCsvFile(file.getOriginalFilename());
+            return retrieveCsvFile(file.getOriginalFilename() + random_id);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -45,7 +52,6 @@ public class StorageService {
          if(file.exists()) {
              return file;
          }
-         //TODO hacer cosas
          return null;
     }
 

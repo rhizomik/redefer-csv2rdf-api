@@ -1,5 +1,6 @@
 package com.tfg.controllers;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -52,8 +53,8 @@ public class FileUploadController {
     public byte[] generateRDF(@RequestParam("file") MultipartFile file,
                               @RequestParam("RDFRequest") RDFRequest request) throws IOException, GeneralException {
 
-        storageService.storeCSV(file);
-        Model rdf = rdfService.createRDF(storageService.retrieveCsvFile(file.getOriginalFilename()), request);
+        File saved_file = storageService.storeCSV(file);
+        Model rdf = rdfService.createRDF(saved_file, request);
 
         byte[] returnBytes = rdfService.modelToByte(rdf, RDFLanguages.nameToLang(request.format));
 

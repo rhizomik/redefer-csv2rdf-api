@@ -5,7 +5,6 @@ import com.tfg.models.*;
 import com.tfg.models.security.User;
 import com.tfg.repositories.FileRefRepository;
 import com.tfg.repositories.RdfRefRepository;
-import com.tfg.repositories.UserRepository;
 import com.tfg.utils.CsvReader;
 
 import org.apache.commons.io.FileUtils;
@@ -18,16 +17,12 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.io.*;
-import java.sql.Date;
 import java.util.ArrayList;
 import java.util.List;
 
 
 @Service
 public class RDFService {
-
-    @Autowired
-    private UserRepository userRepository;
 
     @Value("file.upload-dir")
     private String provisionalPath;
