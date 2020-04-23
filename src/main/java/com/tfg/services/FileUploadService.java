@@ -1,30 +1,33 @@
 package com.tfg.services;
 
 import com.tfg.models.FileRef;
+import com.tfg.models.RdfRef;
 import com.tfg.models.security.User;
 import com.tfg.repositories.FileRefRepository;
 import com.tfg.repositories.RdfRefRepository;
-import com.tfg.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.io.File;
 
 @Service
 public class FileUploadService {
 
     @Autowired
-    private StorageService storageService;
-
-    @Autowired
     private FileRefRepository fileRefRepository;
 
     @Autowired
-    private UserRepository userRepository;
+    private RdfRefRepository rdfRefRepository;
 
     @Autowired
     private UserService userService;
 
+    /**
+     * Saves the csv to the database
+     * @param bytes the byteFile
+     * @param fileName the name of the file
+     * @param username the username of the user
+     * @return a FileRef
+     */
     public FileRef saveCsvToDatabase(byte[] bytes, String fileName, String username) {
         User user = (User) userService.loadUserByUsername(username);
         FileRef fileRef = fileRefRepository.findByOriginalNameAndUser(fileName, user);
@@ -36,5 +39,26 @@ public class FileUploadService {
             return fileRefRepository.save(fileRef);
         }
         return fileRef;
+    }
+
+    /**
+     * Saves the rdf to the database
+     * @param rdfBytes the byteFile
+     * @param username the username of the user
+     * @param fileName the name of the file
+     * @param format the format in which is stored
+     */
+    public RdfRef saveRDFToDatabase(byte[] rdfBytes, String username, String fileName, String format) {
+        User user = (User) userService.loadUserByUsername(username);
+        FileRef fileRef = fileRefRepository.findByOriginalNameAndUser(fileName, user);
+
+        RdfRef rdfRef = rdfRefRepository.findByFileRef(fileRef);
+        if(rdfRef == null) {
+            rdfRef = new RdfRef();
+        }
+        rdfRef.setRDFFile(rdfBytes);
+        rdfRef.setFileRef(fileRef);
+        rdfRef.setFormat(format);
+        return rdfRefRepository.save(rdfRef);
     }
 }

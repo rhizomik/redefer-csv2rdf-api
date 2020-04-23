@@ -29,6 +29,9 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.Valid;
 
+/**
+ * Manages all the file related calls
+ */
 @Controller
 @RequestMapping("/api")
 public class FileUploadController {
@@ -47,7 +50,14 @@ public class FileUploadController {
         binder.registerCustomEditor(RDFRequest.class, new RDFRequestEditor());
     }
 
-
+    /**
+     * RDF Transformation call, generates the rdf file
+     * @param file the csv file input
+     * @param request the data request
+     * @return a byte array with the rdf
+     * @throws IOException if there is a problem with the file manipulation
+     * @throws GeneralException if there is a problem with the datatype
+     */
     @PostMapping(value = "/transform")
     @ResponseBody
     public byte[] generateRDF(@RequestParam("file") MultipartFile file,
@@ -61,6 +71,13 @@ public class FileUploadController {
         return returnBytes;
     }
 
+    /**
+     * RDF Transformation call, generates the rdf file
+     * @param file the csv file input
+     * @param request the data request
+     * @return a byte array with the rdf
+     * @throws IOException if there is a problem with the file manipulation
+     */
     @PostMapping("/transform-user")
     @ResponseBody
     public byte[] handleFileUpload(@RequestParam("file") MultipartFile file,
@@ -71,11 +88,15 @@ public class FileUploadController {
         Model rdf = rdfService.createRDFUser(fileRef, request);
 
         byte[] rdfBytes = rdfService.modelToByte(rdf, RDFLanguages.nameToLang(request.format));
-        rdfService.saveRDFToDatabase(rdfBytes, user.getUsername(), file.getOriginalFilename(), request.format);
+        fileUploadService.saveRDFToDatabase(rdfBytes, user.getUsername(), file.getOriginalFilename(), request.format);
 
         return rdfBytes;
     }
 
+    /**
+     * Get call. Gets all the rdf.
+     * @return all the rdf given a user
+     */
     @GetMapping("/get-all-transformations")
     @ResponseBody
     public FileList getAllRdfRef() {
@@ -86,6 +107,11 @@ public class FileUploadController {
         return rdfService.getAllRdfRefs(user);
     }
 
+    /**
+     * Download call. Returns the files requested
+     * @param file The csv file requested
+     * @return a list of string. On the [0] element it contains the csv file data and on [1] the rdf file.
+     */
     @PostMapping("/download-transformations")
     @ResponseBody
     public List<String> downloadFiles(@RequestParam("requestedFile") String file)  {
@@ -93,6 +119,6 @@ public class FileUploadController {
         if (user == null) {
             return null;
         }
-        return rdfService.getRequestedByteFiles(file, user);
+        return rdfService.getRequestedFiles(file, user);
     }
 }

@@ -11,6 +11,9 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Helper class to transform files to a csv
+ */
 public class CsvReader {
 
     private static CSVReader reader;
@@ -18,6 +21,12 @@ public class CsvReader {
     public CsvReader() {
     }
 
+    /**
+     * Converts a file to a Csv class
+     * @param file the File to be converted
+     * @return the Csv data object
+     * @throws IOException if there is a problem with the file manipulation
+     */
     public static Csv convertFileToCsv(File file) throws IOException {
         reader = new CSVReader(new FileReader(file));
         List<String[]> list = reader.readAll();

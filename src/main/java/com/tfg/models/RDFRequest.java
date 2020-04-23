@@ -3,8 +3,9 @@ package com.tfg.models;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 
-
+import javax.persistence.Entity;
 import java.util.List;
+
 
 public class RDFRequest {
 
@@ -18,7 +19,6 @@ public class RDFRequest {
     public List<String> types;
     @JsonProperty("dataTypes")
     public List<DataType> dataTypes;
-
 
   public RDFRequest() {
   }

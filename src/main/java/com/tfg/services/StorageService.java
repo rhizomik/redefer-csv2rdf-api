@@ -21,8 +21,8 @@ public class StorageService {
     private String RDFPath;
 
     /**
-     * Stores the File localy
-     * @param file
+     * Stores the File locally
+     * @param file A file to store
      * @return a boolean indicating if it was possible
      */
     public File storeCSV(MultipartFile file) {
@@ -44,7 +44,7 @@ public class StorageService {
 
     /**
      * Opens and returns the file
-     * @param fileName
+     * @param fileName the fileName
      * @return the file
      */
     public File retrieveCsvFile(String fileName) {
@@ -56,47 +56,13 @@ public class StorageService {
     }
 
     /**
-     * Deletes the file
-     * @param fileName
-     * @return
+     * Deletes the file specified by name
+     * @param fileName the fileName
+     * @return a boolean indicating if it was succesfuly deleted
      */
     public boolean deleteCsvFile(String fileName) {
         File file = retrieveCsvFile(fileName);
         return file.delete();
-    }
-
-    /**
-     * Opens and returns the file
-     * @param fileName
-     * @return the file
-     */
-    public File retrieveRDFFile(String fileName) {
-        File file = new File(RDFPath  + File.separator + fileName);
-        if(file.exists()) {
-            return file;
-        }
-        return null;
-    }
-
-    /**
-     * Deletes the file
-     * @param fileName
-     * @return
-     */
-    public boolean deleteRDFFile(String fileName) {
-        File file = retrieveRDFFile(fileName);
-        return file.delete();
-    }
-
-    public File storeRDF(byte[] file, String fileName)  {
-        try (OutputStream os = Files.newOutputStream(Paths.get(RDFPath + fileName))) {
-            os.write(file);
-            os.close();
-            return retrieveRDFFile(fileName);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return null;
     }
 }
 

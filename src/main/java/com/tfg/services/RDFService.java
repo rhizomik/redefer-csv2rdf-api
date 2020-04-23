@@ -28,22 +28,18 @@ public class RDFService {
     private String provisionalPath;
 
     @Autowired
-    private StorageService storageService;
-
-    @Autowired
     private RdfRefRepository rdfRefRepository;
 
     @Autowired
     private FileRefRepository fileRefRepository;
 
-    @Autowired
-    private UserService userService;
-
     /**
-     * Creates the RDF given a file
-     * @param fileRef
-     * @return A list of models representing the RDF
-     * @throws IOException
+     * Creates the RDF given a filerEF
+     * @param fileRef the fileRef which has the info about the file
+     * @param request the request containing the parameters to create the RDF
+     * @return A model representing the RDF
+     * @throws IOException if the file fails to get retrieved
+     * @throws GeneralException if there is a problem with the datatype
      */
     public Model createRDFUser(FileRef fileRef, RDFRequest request) throws IOException, GeneralException {
         File file = new File(provisionalPath + File.separator + fileRef.getOriginalName());
@@ -51,6 +47,14 @@ public class RDFService {
         return createRDF(file, request);
     }
 
+    /**
+     * Creates the RDF given a filerEF
+     * @param file the file to be transformed
+     * @param request the request containing the parameters to create the RDF
+     * @return A model representing the RDF
+     * @throws IOException if the file fails to get retrieved
+     * @throws GeneralException if there is a problem with the datatype
+     */
     public Model createRDF(File file, RDFRequest request) throws IOException, GeneralException {
         Csv csv = CsvReader.convertFileToCsv(file);
         file.delete();
@@ -64,6 +68,11 @@ public class RDFService {
         return model;
     }
 
+    /**
+     * Gets all the rdf of a user
+     * @param user the user to get the rdf from
+     * @return a FileList that contains all the rdf and csv
+     */
     public FileList getAllRdfRefs(User user) {
         List<FileRef> fileRefs = fileRefRepository.findAllByUser(user);
         FileList fileList = new FileList();
@@ -75,24 +84,12 @@ public class RDFService {
         return fileList;
     }
 
-    public void saveRDFToDatabase(byte[] rdfBytes, String username, String fileName, String format) {
-        User user = (User) userService.loadUserByUsername(username);
-        FileRef fileRef = fileRefRepository.findByOriginalNameAndUser(fileName, user);
-
-        RdfRef rdfRef = rdfRefRepository.findByFileRef(fileRef);
-        if(rdfRef == null) {
-            rdfRef = new RdfRef();
-        }
-        rdfRef.setRDFFile(rdfBytes);
-        rdfRef.setFileRef(fileRef);
-        rdfRef.setFormat(format);
-        rdfRefRepository.save(rdfRef);
-    }
 
     /**
-     * Given a list of models, transforms it to string
-     * @param model
-     * @return a string
+     * Transforms the model to a string
+     * @param model the model to be transformed
+     * @param format the format in which the transformation must be
+     * @return a String with the model
      */
     public String modelToString(Model model, Lang format) {
         StringWriter out = new StringWriter();
@@ -101,8 +98,30 @@ public class RDFService {
         return out.toString();
     }
 
+    /**
+     * Transforms the model to a byte array
+     * @param model the model
+     * @param format the format in which has to be transformed
+     * @return
+     */
     public byte[] modelToByte(Model model, Lang format) {
         return modelToString(model, format).getBytes();
+    }
+
+    /**
+     * Returns list of strings that contains the files data
+     * @param file the filename
+     * @param user the user
+     * @return a list of strings that contain the files data
+     */
+    public List<String> getRequestedFiles(String file, User user)  {
+        FileRef fileRef = fileRefRepository.findByOriginalNameAndUser(file, user);
+        RdfRef rdfRef = rdfRefRepository.findByFileRef(fileRef);
+
+        ArrayList<String> list = new ArrayList<>();
+        list.add(new String(fileRef.getFile()));
+        list.add(new String(rdfRef.getRDFFile()));
+        return list;
     }
 
     private int getSubjectPosition(String subject, String[] headers) throws GeneralException {
@@ -117,21 +136,12 @@ public class RDFService {
     private void addProperties(Resource r, String[] lines, Model model, int subjectPosition, List<String> types, List<DataType> dataTypes) throws GeneralException {
         for(int j = 0; j < lines.length; j++) {
             if(j != subjectPosition){
-             //   Property property = model.createProperty(types.get(j));
                 createTypedLiteral(model, dataTypes.get(j), r, types.get(j), lines[j]);
             }
         }
     }
 
-    public List<String> getRequestedByteFiles(String file, User user)  {
-        FileRef fileRef = fileRefRepository.findByOriginalNameAndUser(file, user);
-        RdfRef rdfRef = rdfRefRepository.findByFileRef(fileRef);
 
-        ArrayList<String> list = new ArrayList<>();
-        list.add(new String(fileRef.getFile()));
-        list.add(new String(rdfRef.getRDFFile()));
-        return list;
-    }
 
     private void createTypedLiteral(Model model, DataType dataType, Resource r, String propertyUri, String value) throws GeneralException {
         Literal l = selectDataTypeLiteral(model, value, dataType);
