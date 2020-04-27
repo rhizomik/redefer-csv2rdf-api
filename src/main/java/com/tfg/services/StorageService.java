@@ -17,9 +17,6 @@ public class StorageService {
     @Value("${file.upload-dir}")
     private String CsvPath;
 
-    @Value("file.rdf-save-dir")
-    private String RDFPath;
-
     /**
      * Stores the File locally
      * @param file A file to store

@@ -1,51 +1,29 @@
 package com.tfg.models;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.tfg.models.security.User;
 
-
-import javax.persistence.*;
+import javax.persistence.ElementCollection;
 import java.util.ArrayList;
 import java.util.List;
 
-@Entity
-public class RDFRequest {
+public class RDFEditorInfoResponse {
 
-    @Id
-    @GeneratedValue(strategy= GenerationType.AUTO)
-    public long id;
-
-    @JsonProperty("subject")
     public String subject;
 
-    @JsonProperty("uri")
     public String uri;
 
-    @JsonProperty("format")
     public String format;
 
-    @ElementCollection
-    @JsonProperty("types")
     public List<String> types = new ArrayList<>();
 
-    @ElementCollection
-    @JsonProperty("dataTypes")
     public List<DataType> dataTypes = new ArrayList<>();
 
-    @OneToOne
-    User user = null;
-
-    @OneToOne
-    RdfRef rdfRef;
-
-    public RDFRequest() { }
-
-    public RDFRequest(String subject, String uri, String format, List<String> types,  List<DataType> dataTypes) {
-        this.subject = subject;
-        this.uri = uri;
-        this.format = format;
-        this.types = types;
-        this.dataTypes = dataTypes;
+    public RDFEditorInfoResponse(RDFRequest rdfRequest){
+        this.setDataTypes(rdfRequest.dataTypes);
+        this.setFormat(rdfRequest.getFormat());
+        this.setSubject(rdfRequest.getSubject());
+        this.setTypes(rdfRequest.getTypes());
+        this.setUri(rdfRequest.getUri());
     }
 
     public String getSubject() {
@@ -86,21 +64,5 @@ public class RDFRequest {
 
     public void setDataTypes(List<DataType> dataTypes) {
         this.dataTypes = dataTypes;
-    }
-
-    public User getUser() {
-        return user;
-    }
-
-    public void setUser(User user) {
-        this.user = user;
-    }
-
-    public RdfRef getRdfRef() {
-        return rdfRef;
-    }
-
-    public void setRdfRef(RdfRef rdfRef) {
-        this.rdfRef = rdfRef;
     }
 }

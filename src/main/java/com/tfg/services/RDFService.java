@@ -4,6 +4,7 @@ import com.tfg.exceptions.GeneralException;
 import com.tfg.models.*;
 import com.tfg.models.security.User;
 import com.tfg.repositories.FileRefRepository;
+import com.tfg.repositories.RDFRequestRepository;
 import com.tfg.repositories.RdfRefRepository;
 import com.tfg.utils.CsvReader;
 
@@ -32,6 +33,9 @@ public class RDFService {
 
     @Autowired
     private FileRefRepository fileRefRepository;
+
+    @Autowired
+    private RDFRequestRepository rdfRequestRepository;
 
     /**
      * Creates the RDF given a filerEF
@@ -124,6 +128,18 @@ public class RDFService {
         return list;
     }
 
+    /**
+     * Saves the request to db associated to a user
+     * @param user the user
+     * @param request the request
+     * @return the saved request
+     */
+    public RDFRequest saveRequestToDatabase(User user, RdfRef rdfRef, RDFRequest request) {
+        request.setUser(user);
+        request.setRdfRef(rdfRef);
+        return rdfRequestRepository.save(request);
+    }
+
     private int getSubjectPosition(String subject, String[] headers) throws GeneralException {
         for(int i=0; i<headers.length; i++) {
             if (subject.equals(headers[i])){
@@ -165,5 +181,19 @@ public class RDFService {
                 throw new GeneralException("DataType doesn't correspond to a parsejable type");
         }
 
+    }
+
+    /**
+     * Gets a RDFRequest
+     * @param fileName name of the file
+     * @param user user owner of the file
+     * @return The info of the editor
+     */
+    public RDFEditorInfoResponse getRDFRequest(String fileName, User user) {
+        FileRef fileRef = fileRefRepository.findByOriginalNameAndUser(fileName, user);
+        RdfRef rdfRef = rdfRefRepository.findByFileRef(fileRef);
+
+        RDFRequest rdfRequest = rdfRequestRepository.findByUserAndRdfRef(user, rdfRef);
+        return new RDFEditorInfoResponse(rdfRequest);
     }
 }

@@ -14,9 +14,6 @@ public class AuthenticationConfig extends GlobalAuthenticationConfigurerAdapter 
     @Autowired
     UserService userService;
 
-    @Autowired
-    UserRepository userRepository;
-
     @Override
     public void init(AuthenticationManagerBuilder auth) throws Exception {
         auth

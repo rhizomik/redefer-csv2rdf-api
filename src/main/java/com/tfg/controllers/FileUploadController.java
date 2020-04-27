@@ -8,10 +8,7 @@ import java.util.List;
 import com.tfg.conf.RDFRequestEditor;
 import com.tfg.exceptions.GeneralException;
 import com.tfg.exceptions.StorageFileNotFoundException;
-import com.tfg.models.FileList;
-import com.tfg.models.FileRef;
-import com.tfg.models.RDFRequest;
-import com.tfg.models.RdfRef;
+import com.tfg.models.*;
 import com.tfg.models.security.User;
 import com.tfg.repositories.RdfRefRepository;
 import com.tfg.services.FileUploadService;
@@ -83,13 +80,14 @@ public class FileUploadController {
     public byte[] handleFileUpload(@RequestParam("file") MultipartFile file,
                                    @RequestParam("RDFRequest") @Valid RDFRequest request) throws IOException, GeneralException {
 
-        User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        User user = getUser();
         FileRef fileRef = fileUploadService.saveCsvToDatabase(file.getBytes(), file.getOriginalFilename(), user.getUsername());
         Model rdf = rdfService.createRDFUser(fileRef, request);
 
         byte[] rdfBytes = rdfService.modelToByte(rdf, RDFLanguages.nameToLang(request.format));
-        fileUploadService.saveRDFToDatabase(rdfBytes, user.getUsername(), file.getOriginalFilename(), request.format);
+        RdfRef rdfRef = fileUploadService.saveRDFToDatabase(rdfBytes, user.getUsername(), file.getOriginalFilename(), request.format);
 
+        rdfService.saveRequestToDatabase(user, rdfRef, request);
         return rdfBytes;
     }
 
@@ -100,7 +98,7 @@ public class FileUploadController {
     @GetMapping("/get-all-transformations")
     @ResponseBody
     public FileList getAllRdfRef() {
-        User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        User user = getUser();
         if (user == null) {
             return new FileList();
         }
@@ -115,10 +113,21 @@ public class FileUploadController {
     @PostMapping("/download-transformations")
     @ResponseBody
     public List<String> downloadFiles(@RequestParam("requestedFile") String file)  {
-        User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        User user = getUser();
         if (user == null) {
             return null;
         }
         return rdfService.getRequestedFiles(file, user);
+    }
+
+    @GetMapping("/getRequest")
+    @ResponseBody
+    public RDFEditorInfoResponse getRequest(@RequestParam("fileName") String fileName) {
+        User user = getUser();
+        return rdfService.getRDFRequest(fileName, user);
+    }
+
+    private User getUser() {
+        return (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
     }
 }

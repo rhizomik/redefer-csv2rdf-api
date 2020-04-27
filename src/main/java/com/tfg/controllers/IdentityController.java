@@ -33,7 +33,6 @@ public class IdentityController {
     @RequestMapping(value = "/register", produces = "application/json")
     public @ResponseBody
     User registerUser(User user) throws GeneralException {
-        User registeredUser = userService.registerNewUserAccount(user);
-        return registeredUser;
+        return userService.registerNewUserAccount(user);
     }
 }
