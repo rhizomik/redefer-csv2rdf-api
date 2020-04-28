@@ -87,7 +87,7 @@ public class FileUploadController {
         byte[] rdfBytes = rdfService.modelToByte(rdf, RDFLanguages.nameToLang(request.format));
         RdfRef rdfRef = fileUploadService.saveRDFToDatabase(rdfBytes, user.getUsername(), file.getOriginalFilename(), request.format);
 
-        rdfService.saveRequestToDatabase(user, rdfRef, request);
+        rdfService.saveRequestToDatabase(rdfRef, request);
         return rdfBytes;
     }
 
@@ -120,9 +120,9 @@ public class FileUploadController {
         return rdfService.getRequestedFiles(file, user);
     }
 
-    @GetMapping("/getRequest")
+    @GetMapping("/get-request/{fileName}")
     @ResponseBody
-    public RDFEditorInfoResponse getRequest(@RequestParam("fileName") String fileName) {
+    public RDFEditorInfoResponse getRequest(@PathVariable String fileName) {
         User user = getUser();
         return rdfService.getRDFRequest(fileName, user);
     }

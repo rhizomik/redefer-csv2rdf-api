@@ -130,12 +130,10 @@ public class RDFService {
 
     /**
      * Saves the request to db associated to a user
-     * @param user the user
      * @param request the request
      * @return the saved request
      */
-    public RDFRequest saveRequestToDatabase(User user, RdfRef rdfRef, RDFRequest request) {
-        request.setUser(user);
+    public RDFRequest saveRequestToDatabase(RdfRef rdfRef, RDFRequest request) {
         request.setRdfRef(rdfRef);
         return rdfRequestRepository.save(request);
     }
@@ -193,7 +191,8 @@ public class RDFService {
         FileRef fileRef = fileRefRepository.findByOriginalNameAndUser(fileName, user);
         RdfRef rdfRef = rdfRefRepository.findByFileRef(fileRef);
 
-        RDFRequest rdfRequest = rdfRequestRepository.findByUserAndRdfRef(user, rdfRef);
-        return new RDFEditorInfoResponse(rdfRequest);
+        RDFRequest rdfRequest = rdfRequestRepository.findByRdfRef(rdfRef);
+
+        return new RDFEditorInfoResponse(rdfRequest, fileRef.getFile());
     }
 }

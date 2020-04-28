@@ -33,9 +33,6 @@ public class RDFRequest {
     public List<DataType> dataTypes = new ArrayList<>();
 
     @OneToOne
-    User user = null;
-
-    @OneToOne
     RdfRef rdfRef;
 
     public RDFRequest() { }
@@ -86,14 +83,6 @@ public class RDFRequest {
 
     public void setDataTypes(List<DataType> dataTypes) {
         this.dataTypes = dataTypes;
-    }
-
-    public User getUser() {
-        return user;
-    }
-
-    public void setUser(User user) {
-        this.user = user;
     }
 
     public RdfRef getRdfRef() {

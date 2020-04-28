@@ -8,5 +8,5 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface RDFRequestRepository extends CrudRepository<RDFRequest, Long> {
-    RDFRequest findByUserAndRdfRef(User user, RdfRef rdfRef);
+    RDFRequest findByRdfRef(RdfRef rdfRef);
 }

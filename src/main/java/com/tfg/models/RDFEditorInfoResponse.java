@@ -18,12 +18,15 @@ public class RDFEditorInfoResponse {
 
     public List<DataType> dataTypes = new ArrayList<>();
 
-    public RDFEditorInfoResponse(RDFRequest rdfRequest){
+    public String csvFile;
+
+    public RDFEditorInfoResponse(RDFRequest rdfRequest, byte[] bytes){
         this.setDataTypes(rdfRequest.dataTypes);
         this.setFormat(rdfRequest.getFormat());
         this.setSubject(rdfRequest.getSubject());
         this.setTypes(rdfRequest.getTypes());
         this.setUri(rdfRequest.getUri());
+        this.setCsvFile(bytes);
     }
 
     public String getSubject() {
@@ -64,5 +67,13 @@ public class RDFEditorInfoResponse {
 
     public void setDataTypes(List<DataType> dataTypes) {
         this.dataTypes = dataTypes;
+    }
+
+    public String getCsvFile() {
+        return csvFile;
+    }
+
+    public void setCsvFile(byte[] csvFile) {
+        this.csvFile = new String(csvFile);
     }
 }
