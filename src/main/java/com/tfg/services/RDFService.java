@@ -149,7 +149,7 @@ public class RDFService {
 
     private void addProperties(Resource r, String[] lines, Model model, int subjectPosition, List<String> types, List<DataType> dataTypes) throws GeneralException {
         for(int j = 0; j < lines.length; j++) {
-            if(j != subjectPosition){
+            if(j != subjectPosition && !lines[j].equals("")){
                 createTypedLiteral(model, dataTypes.get(j), r, types.get(j), lines[j]);
             }
         }
