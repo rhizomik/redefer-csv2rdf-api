@@ -29,11 +29,10 @@ public class StorageService {
         try (OutputStream os = Files.newOutputStream(Paths.get(CsvPath +
                                                                 File.separator +
                                                                 random_id+
-                                                                file.getOriginalFilename() +
-                                                                random_id))) {
+                                                                file.getOriginalFilename()))) {
             os.write(file.getBytes());
             os.close();
-            return retrieveCsvFile(file.getOriginalFilename() + random_id);
+            return retrieveCsvFile(random_id + file.getOriginalFilename());
         } catch (IOException e) {
             e.printStackTrace();
         }
