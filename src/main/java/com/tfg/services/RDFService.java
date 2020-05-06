@@ -134,8 +134,19 @@ public class RDFService {
      * @return the saved request
      */
     public RDFRequest saveRequestToDatabase(RdfRef rdfRef, RDFRequest request) {
+        RDFRequest dbRequest = rdfRequestRepository.findByRdfRef(rdfRef);
+        if(dbRequest == null){
+            dbRequest = new RDFRequest();
+            dbRequest = request;
+        } else {
+            dbRequest.setDataTypes(request.getDataTypes());
+            dbRequest.setFormat(request.getFormat());
+            dbRequest.setSubject(request.getSubject());
+            dbRequest.setTypes(request.getTypes());
+            dbRequest.setUri(request.getUri());
+        }
         request.setRdfRef(rdfRef);
-        return rdfRequestRepository.save(request);
+        return rdfRequestRepository.save(dbRequest);
     }
 
     private int getSubjectPosition(String subject, String[] headers) throws GeneralException {
@@ -193,6 +204,6 @@ public class RDFService {
 
         RDFRequest rdfRequest = rdfRequestRepository.findByRdfRef(rdfRef);
 
-        return new RDFEditorInfoResponse(rdfRequest, fileRef.getFile());
+        return new RDFEditorInfoResponse(rdfRequest, fileRef.getFile(), fileName);
     }
 }

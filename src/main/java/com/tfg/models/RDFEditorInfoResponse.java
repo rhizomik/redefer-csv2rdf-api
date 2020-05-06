@@ -20,13 +20,24 @@ public class RDFEditorInfoResponse {
 
     public String csvFile;
 
-    public RDFEditorInfoResponse(RDFRequest rdfRequest, byte[] bytes){
+    public String fileName;
+
+    public RDFEditorInfoResponse(RDFRequest rdfRequest, byte[] bytes, String name){
         this.setDataTypes(rdfRequest.dataTypes);
         this.setFormat(rdfRequest.getFormat());
         this.setSubject(rdfRequest.getSubject());
         this.setTypes(rdfRequest.getTypes());
         this.setUri(rdfRequest.getUri());
         this.setCsvFile(bytes);
+        this.setFileName(name);
+    }
+
+    public String getFileName() {
+        return fileName;
+    }
+
+    public void setFileName(String fileName) {
+        this.fileName = fileName;
     }
 
     public String getSubject() {
