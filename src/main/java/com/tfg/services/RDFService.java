@@ -185,13 +185,14 @@ public class RDFService {
             case _date:
                 return model.createTypedLiteral(value, XSDDatatype.XSDdate);
             case _integer:
-                return model.createTypedLiteral(value, XSDDatatype.XSDint);
+                return model.createTypedLiteral(Integer.valueOf(value), XSDDatatype.XSDint);
             case _boolean:
-                return model.createTypedLiteral(value, XSDDatatype.XSDboolean);
+                return model.createTypedLiteral(Boolean.parseBoolean(value), XSDDatatype.XSDboolean);
             case NonInteger:
-                return model.createTypedLiteral(value, XSDDatatype.XSDdecimal);
+                return model.createTypedLiteral((Double.valueOf(value)));
+                //return model.createTypedLiteral(Double.valueOf(value), XSDDatatype.XSDdecimal);
             case resource:
-
+                return model.createLiteral(value);
             default:
                 throw new GeneralException("DataType doesn't correspond to a parsejable type");
         }
