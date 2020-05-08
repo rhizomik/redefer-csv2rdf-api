@@ -186,6 +186,8 @@ public class RDFService {
                 return model.createTypedLiteral(value, XSDDatatype.XSDboolean);
             case NonInteger:
                 return model.createTypedLiteral(value, XSDDatatype.XSDdecimal);
+            case resource:
+                return model.createLiteral(value);
             default:
                 throw new GeneralException("DataType doesn't correspond to a parsejable type");
         }

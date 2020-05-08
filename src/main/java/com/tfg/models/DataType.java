@@ -5,5 +5,6 @@ public enum DataType {
     _integer,
     NonInteger,
     _boolean,
-    _date;
+    _date,
+    resource;
 }
