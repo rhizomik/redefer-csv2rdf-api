@@ -65,6 +65,10 @@ public class RDFService {
 
         Model model = ModelFactory.createDefaultModel();
         int subjectPosition = getSubjectPosition(request.subject, csv.headers);
+        String uri = request.uri;
+        if(uri.endsWith("/")){
+            request.setUri(uri.substring(0, uri.length() - 1));
+        }
         for(int i=0; i < csv.lines.length; i++) {
             Resource r = model.createResource(request.uri + '/'+ csv.lines[i][subjectPosition]);
             addProperties(r, csv.lines[i], model, subjectPosition, request.types, request.dataTypes);
@@ -187,7 +191,7 @@ public class RDFService {
             case NonInteger:
                 return model.createTypedLiteral(value, XSDDatatype.XSDdecimal);
             case resource:
-                return model.createLiteral(value);
+
             default:
                 throw new GeneralException("DataType doesn't correspond to a parsejable type");
         }
