@@ -189,7 +189,7 @@ public class RDFService {
             case _boolean:
                 return model.createTypedLiteral(Boolean.parseBoolean(value), XSDDatatype.XSDboolean);
             case NonInteger:
-                return model.createTypedLiteral((Double.valueOf(value)));
+                return model.createTypedLiteral((Float.valueOf(value)));
                 //return model.createTypedLiteral(Double.valueOf(value), XSDDatatype.XSDdecimal);
             case resource:
                 return model.createLiteral(value);
