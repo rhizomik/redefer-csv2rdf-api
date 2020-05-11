@@ -175,7 +175,14 @@ public class RDFService {
     private void createTypedLiteral(Model model, DataType dataType, Resource r, String propertyUri, String value) throws GeneralException {
         Literal l = selectDataTypeLiteral(model, value, dataType);
         Property property = model.createProperty(propertyUri);
-        model.addLiteral(r, property, l);
+
+        if(l == null) { // This is ugly. Try to change
+            Resource objectResource = model.createResource(value);
+            model.add(r, property, objectResource);
+        } else {
+            model.addLiteral(r, property, l);
+        }
+
     }
 
     private Literal selectDataTypeLiteral(Model model, String value, DataType dataType) throws GeneralException {
@@ -192,7 +199,7 @@ public class RDFService {
                 return model.createTypedLiteral((Float.valueOf(value)));
                 //return model.createTypedLiteral(Double.valueOf(value), XSDDatatype.XSDdecimal);
             case resource:
-                return model.createLiteral(value);
+                return null;
             default:
                 throw new GeneralException("DataType doesn't correspond to a parsejable type");
         }
