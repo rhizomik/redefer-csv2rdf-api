@@ -177,8 +177,14 @@ public class RDFService {
         Property property = model.createProperty(propertyUri);
 
         if(l == null) { // This is ugly. Try to change
-            Resource objectResource = model.createResource(value.replace(" ", "%20"));
-            model.add(r, property, objectResource);
+            value = value.replace(" ", "%20");
+            Resource modelResource = model.getResource(value);
+            if(modelResource != null){
+                model.add(r, property, modelResource);
+            }else{
+                Resource objectResource = model.createResource(value.replace(" ", "%20"));
+                model.add(r, property, objectResource);
+            }
         } else {
             model.addLiteral(r, property, l);
         }
