@@ -70,7 +70,7 @@ public class RDFService {
             request.setUri(uri.substring(0, uri.length() - 1));
         }
         for(int i=0; i < csv.lines.length; i++) {
-            Resource r = model.createResource(request.uri + '/'+ csv.lines[i][subjectPosition]);
+            Resource r = model.createResource(request.uri + '/'+ csv.lines[i][subjectPosition].replace(" ", "%20"));
             addProperties(r, csv.lines[i], model, subjectPosition, request.types, request.dataTypes);
         }
         return model;
@@ -177,7 +177,7 @@ public class RDFService {
         Property property = model.createProperty(propertyUri);
 
         if(l == null) { // This is ugly. Try to change
-            Resource objectResource = model.createResource(value);
+            Resource objectResource = model.createResource(value.replace(" ", "%20"));
             model.add(r, property, objectResource);
         } else {
             model.addLiteral(r, property, l);
