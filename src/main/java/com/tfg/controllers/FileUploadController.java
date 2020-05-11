@@ -2,22 +2,18 @@ package com.tfg.controllers;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 
 import com.tfg.conf.RDFRequestEditor;
 import com.tfg.exceptions.GeneralException;
-import com.tfg.exceptions.StorageFileNotFoundException;
 import com.tfg.models.*;
 import com.tfg.models.security.User;
-import com.tfg.repositories.RdfRefRepository;
 import com.tfg.services.FileUploadService;
 import com.tfg.services.RDFService;
 import com.tfg.services.StorageService;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.riot.RDFLanguages;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.WebDataBinder;
@@ -60,7 +56,7 @@ public class FileUploadController {
     public byte[] generateRDF(@RequestParam("file") MultipartFile file,
                               @RequestParam("RDFRequest") RDFRequest request) throws IOException, GeneralException {
 
-        File saved_file = storageService.storeCSV(file);
+        File saved_file = storageService.createTempFile(file);
         Model rdf = rdfService.createRDF(saved_file, request);
 
         byte[] returnBytes = rdfService.modelToByte(rdf, RDFLanguages.nameToLang(request.format));
