@@ -22,6 +22,7 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
+
 @Service
 public class RDFService {
 
@@ -178,12 +179,13 @@ public class RDFService {
 
         if(l == null) { // This is ugly. Try to change
             value = value.replace(" ", "%20");
+            Resource objectResource;
             if(isValidUri(value)){
-                model.add(r, property, requestUri + "/" + requestUri);
+                objectResource = model.createResource(value);
             }else{
-                Resource objectResource = model.createResource(value.replace(" ", "%20"));
-                model.add(r, property, objectResource);
+                objectResource = model.createResource(requestUri + value);
             }
+            model.add(r, property, objectResource);
         } else {
             model.addLiteral(r, property, l);
         }
