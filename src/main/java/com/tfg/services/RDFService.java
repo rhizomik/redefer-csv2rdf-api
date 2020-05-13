@@ -18,9 +18,9 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.io.*;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
-
 
 @Service
 public class RDFService {
@@ -71,7 +71,7 @@ public class RDFService {
         }
         for(int i=0; i < csv.lines.length; i++) {
             Resource r = model.createResource(request.uri + '/'+ csv.lines[i][subjectPosition].replace(" ", "%20"));
-            addProperties(r, csv.lines[i], model, subjectPosition, request.types, request.dataTypes);
+            addProperties(r, csv.lines[i], model, subjectPosition, request.types, request.dataTypes, request.uri);
         }
         return model;
     }
@@ -162,25 +162,24 @@ public class RDFService {
         throw new GeneralException("Subject doesn't correspond to any of the headers");
     }
 
-    private void addProperties(Resource r, String[] lines, Model model, int subjectPosition, List<String> types, List<DataType> dataTypes) throws GeneralException {
+    private void addProperties(Resource r, String[] lines, Model model, int subjectPosition, List<String> types, List<DataType> dataTypes, String requestUri) throws GeneralException {
         for(int j = 0; j < lines.length; j++) {
             if(j != subjectPosition && !lines[j].equals("")){
-                createTypedLiteral(model, dataTypes.get(j), r, types.get(j), lines[j]);
+                createTypedLiteral(model, dataTypes.get(j), r, types.get(j), lines[j], requestUri);
             }
         }
     }
 
 
 
-    private void createTypedLiteral(Model model, DataType dataType, Resource r, String propertyUri, String value) throws GeneralException {
+    private void createTypedLiteral(Model model, DataType dataType, Resource r, String propertyUri, String value, String requestUri) throws GeneralException {
         Literal l = selectDataTypeLiteral(model, value, dataType);
         Property property = model.createProperty(propertyUri);
 
         if(l == null) { // This is ugly. Try to change
             value = value.replace(" ", "%20");
-            Resource modelResource = model.getResource(value);
-            if(modelResource != null){
-                model.add(r, property, modelResource);
+            if(isValidUri(value)){
+                model.add(r, property, requestUri + "/" + requestUri);
             }else{
                 Resource objectResource = model.createResource(value.replace(" ", "%20"));
                 model.add(r, property, objectResource);
@@ -225,5 +224,15 @@ public class RDFService {
         RDFRequest rdfRequest = rdfRequestRepository.findByRdfRef(rdfRef);
 
         return new RDFEditorInfoResponse(rdfRequest, fileRef.getFile(), fileName);
+    }
+
+    private boolean isValidUri(String uri) {
+        try {
+            URL url = new URL(uri);
+            url.toURI();
+            return true;
+        } catch (Exception exception) {
+            return false;
+        }
     }
 }
