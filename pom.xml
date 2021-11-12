@@ -8,18 +8,16 @@
 		<version>2.1.9.RELEASE</version>
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
-	<groupId>com.tfg</groupId>
-	<artifactId>tfg</artifactId>
+	<groupId>net.rhizomik.redefer</groupId>
+	<artifactId>csv2rdf-api</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<name>tfg</name>
-	<description>Tool to improve open data quality</description>
+	<name>csv2rdf-api</name>
 
 	<properties>
-		<java.version>1.8</java.version>
+		<java.version>11</java.version>
 	</properties>
 
 	<dependencies>
-
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-data-rest</artifactId>
